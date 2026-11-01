@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- هذا السطر يخبر متصفح الموبايل أن يلون شريط المتصفح العلوي بنفس لون خلفية تطبيقك تماماً ليتطابق دوان أي مربعات سوداء -->
+    <meta name="theme-color" content="#101622">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>نبراس - Nibras</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +21,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* تثبيت الخلفية والألوان لتغطي الشاشة تماماً بدون فراغات سوداء */
         html, body {
             width: 100%;
             height: 100%;
@@ -45,9 +47,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
+            padding: 14px 20px;
             z-index: 20;
             flex-shrink: 0;
+            background: transparent;
             position: relative;
         }
 
