@@ -21,14 +21,15 @@
         html, body {
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #05070c;
             overflow: hidden;
         }
 
         .app-container {
             width: 100%;
             height: 100dvh;
-            background: radial-gradient(circle at 50% 15%, #101622 0%, #05070c 70%, #020305 100%);
+            /* تم تعديل الخلفية لتتدرج بشكل نعم ومتناسق بدون أي فراغات سوداء حادة في الأعلى */
+            background: linear-gradient(180deg, #101622 0%, #070a12 50%, #020305 100%);
             position: relative;
             color: white;
             display: flex;
@@ -44,11 +45,11 @@
             padding: 12px 20px;
             z-index: 20;
             flex-shrink: 0;
-            position: relative; /* ضروري لتمركز كلمة نبراس بدقة بالمنتصف فوق حبل المصباح */
+            position: relative;
         }
 
         .header-brand {
-            font-size: 30px; /* تكبير كلمة نبراس لتكون بارزة وفخمة */
+            font-size: 28px; /* تكبير كلمة نبراس وفخامتها */
             font-weight: 800;
             letter-spacing: 2px;
             background: linear-gradient(135deg, #ffffff 30%, #fce18b 70%, #d49b3b 100%);
@@ -57,9 +58,8 @@
             filter: drop-shadow(0 3px 8px rgba(212, 155, 59, 0.5));
             position: absolute;
             left: 50%;
-            transform: translateX(-50%); /* التمركز التام في النص فوق حبل المصباح */
+            transform: translateX(-50%); /* التمركز المطلق في المنتصف تماماً فوق حبل المصباح */
             text-align: center;
-            margin: 0;
         }
 
         .menu-icon {
