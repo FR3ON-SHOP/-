@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- هذا السطر يخبر متصفح الموبايل أن يلون شريط المتصفح العلوي بنفس لون خلفية تطبيقك تماماً ليتطابق دوان أي مربعات سوداء -->
     <meta name="theme-color" content="#101622">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>نبراس - Nibras</title>
@@ -1075,7 +1074,7 @@
                         <button class="send-btn" id="sendBtn" aria-label="إرسال">
                             <i class="fa-solid fa-arrow-left"></i>
                         </button>
-                        <button class="icon-btn mic-btn" id="micBtn" aria-label="التحدث الصوتي">
+                        <button class="icon-btn mic-btn" id="micBtn" aria-label="التحدث الصوتي" title="البحث الصوتي">
                             <i class="fa-solid fa-microphone"></i>
                         </button>
                         <button class="auto-btn" id="autoBtn">
@@ -1355,8 +1354,38 @@
             filesInput.value = '';
         });
 
+        /* تم استبدال رسالة التنبيه القديمة بكود إملاء صوتي حقيقي يعمل على GitHub (HTTPS) */
         micBtn.addEventListener('click', () => {
-            alert('خاصية الميكروفون تتطلب رفع التطبيق على استضافة آمنة (HTTPS).');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ar-SA'; // اللغة العربية
+                recognition.interimResults = false;
+
+                recognition.onstart = () => {
+                    micBtn.style.color = '#ff4757'; // تغيير لون الأيقونة للإشارة إلى أن التسجيل بدأ
+                    userInput.placeholder = 'جارِ الاستماع... تحدث الآن';
+                };
+
+                recognition.onresult = (event) => {
+                    const speechToText = event.results[0][0].transcript;
+                    userInput.value = speechToText;
+                };
+
+                recognition.onerror = () => {
+                    micBtn.style.color = '#ffffff';
+                    userInput.placeholder = 'اكتب سؤالك هنا...';
+                };
+
+                recognition.onend = () => {
+                    micBtn.style.color = '#ffffff';
+                    userInput.placeholder = 'اكتب سؤالك هنا...';
+                };
+
+                recognition.start();
+            } else {
+                alert('متصفحك لا يدعم خاصية التعرف على الصوت مباشرة.');
+            }
         });
 
         function renderHistory(listToRender = chatSessions) {
