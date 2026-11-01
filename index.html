@@ -103,7 +103,6 @@
             object-fit: cover;
         }
 
-        /* قائمة خيارات البروفايل (تغيير / حذف) */
         .profile-popup-menu {
             position: absolute;
             top: 48px;
@@ -290,6 +289,12 @@
             border-bottom-left-radius: 4px;
         }
 
+        .chat-bubble img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 6px;
+        }
+
         .background-waves {
             position: absolute;
             bottom: 100px;
@@ -451,6 +456,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .mic-btn.recording {
+            color: #ff4757;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
         .auto-btn {
@@ -876,13 +892,11 @@
             <i class="fa-solid fa-bars menu-icon" id="openSidebarBtn" aria-label="القائمة"></i>
             <div class="header-brand">نبـراس</div>
             
-            <!-- حاوية زر البروفايل والقائمة المنسدلة الخاصة به -->
             <div class="profile-avatar-container">
                 <div class="profile-avatar-btn" id="profileAvatarBtn" title="خيارات البروفايل">
                     <img id="userAvatarImg" src="" alt="صورة البروفايل" style="display: none;">
                     <i class="fa-solid fa-user" id="defaultAvatarIcon"></i>
                 </div>
-                <!-- قائمة خيارات الصورة (تغيير أو حذف) -->
                 <div class="profile-popup-menu" id="profilePopupMenu">
                     <div class="profile-popup-item" id="changeAvatarOpt">
                         <i class="fa-solid fa-image"></i>
@@ -998,7 +1012,7 @@
             </svg>
         </div>
 
-        <!-- ملفات مخفية للإرفاق -->
+        <!-- ملفات مخفية للإرفاق (كاميرا، صور، ملفات) -->
         <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
         <input type="file" id="photosInput" accept="image/*" style="display: none;">
         <input type="file" id="filesInput" accept=".pdf,.doc,.docx,.txt,.zip,application/*" style="display: none;">
@@ -1027,6 +1041,7 @@
                     </button>
                 </div>
 
+                <!-- قائمة الإرفاق (كاميرا، صور، ملفات) -->
                 <div class="popup-menu" id="popupMenu">
                     <div class="popup-item" onclick="triggerFileInput('cameraInput')">
                         <div class="popup-icon-circle"><i class="fa-solid fa-camera"></i></div>
@@ -1183,7 +1198,12 @@
         const userAvatarImg = document.getElementById('userAvatarImg');
         const defaultAvatarIcon = document.getElementById('defaultAvatarIcon');
 
-        // عناصر القائمة المنبثقة للضغط المطول
+        // عناصر إدارة رفع الملفات والصور (الكاميرا، المعرض، الملفات)
+        const cameraInput = document.getElementById('cameraInput');
+        const photosInput = document.getElementById('photosInput');
+        const filesInput = document.getElementById('filesInput');
+
+        // عناصر القائمة المنبثقة للضغط المطول على السجل
         const contextMenuOverlay = document.getElementById('contextMenuOverlay');
         const ctxOpenBtn = document.getElementById('ctxOpenBtn');
         const ctxDeleteBtn = document.getElementById('ctxDeleteBtn');
@@ -1195,7 +1215,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderHistory();
-            if (micBtn) micBtn.title = "التحدث الصوتي جاهز";
 
             const savedAvatar = localStorage.getItem('nibras_user_avatar');
             if (savedAvatar) {
@@ -1205,26 +1224,23 @@
             }
         });
 
-        // إظهار أو إخفاء قائمة خيارات البروفايل عند الضغط على الزر الدائري
+        // 1. إدارة قائمة البروفايل
         profileAvatarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             profilePopupMenu.classList.toggle('active');
         });
 
-        // إغلاق القائمة عند النقر في أي مكان آخر بالصفحة
         document.addEventListener('click', (e) => {
             if (!profilePopupMenu.contains(e.target) && e.target !== profileAvatarBtn) {
                 profilePopupMenu.classList.remove('active');
             }
         });
 
-        // اختيار خيار "تغيير الصورة"
         changeAvatarOpt.addEventListener('click', () => {
             profilePopupMenu.classList.remove('active');
             profileImageInput.click();
         });
 
-        // اختيار خيار "حذف الصورة"
         deleteAvatarOpt.addEventListener('click', () => {
             profilePopupMenu.classList.remove('active');
             userAvatarImg.src = '';
@@ -1248,6 +1264,114 @@
             }
         });
 
+        // 2. إدارة رفع الملفات والصور والكاميرا داخل الشات
+        function triggerFileInput(id) {
+            popupMenu.classList.remove('active');
+            document.getElementById(id).click();
+        }
+
+        // معالجة الصور أو الملفات المختارة ووضعها في الشات
+        function handleFileAttachment(file, type) {
+            welcomeContainer.classList.add('hidden');
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const fileData = event.target.result;
+                let contentHTML = '';
+
+                if (type === 'image') {
+                    contentHTML = `<p>إرسال صورة:</p><img src="${fileData}" alt="Uploaded Image">`;
+                } else {
+                    contentHTML = `<p>إرسال ملف: <b>${file.name}</b></p>`;
+                }
+
+                const userBubble = document.createElement('div');
+                userBubble.className = 'chat-bubble user';
+                userBubble.innerHTML = contentHTML;
+                chatMessagesBox.appendChild(userBubble);
+
+                if (currentSessionIndex === null) {
+                    const newSession = {
+                        title: type === 'image' ? 'صورة مرفقة' : file.name,
+                        messages: [{ sender: 'user', text: contentHTML }]
+                    };
+                    chatSessions.unshift(newSession);
+                    currentSessionIndex = 0;
+                } else {
+                    chatSessions[currentSessionIndex].messages.push({ sender: 'user', text: contentHTML });
+                }
+
+                setTimeout(() => {
+                    const aiResponseText = `أهلاً بك! لقد استلمت الملف/الصورة بنجاح. كيف يمكنني مساعدتك في تحليلها؟`;
+                    const aiBubble = document.createElement('div');
+                    aiBubble.className = 'chat-bubble ai';
+                    aiBubble.innerText = aiResponseText;
+                    chatMessagesBox.appendChild(aiBubble);
+                    chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+
+                    chatSessions[currentSessionIndex].messages.push({ sender: 'ai', text: aiResponseText });
+                    localStorage.setItem('nibras_sessions', JSON.stringify(chatSessions));
+                    renderHistory();
+                }, 600);
+            };
+
+            if (type === 'image') {
+                reader.readAsDataURL(file);
+            } else {
+                reader.readAsDataURL(file); // أو معالجة النصوص
+            }
+        }
+
+        cameraInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFileAttachment(e.target.files[0], 'image');
+        });
+
+        photosInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFileAttachment(e.target.files[0], 'image');
+        });
+
+        filesInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFileAttachment(e.target.files[0], 'file');
+        });
+
+        // 3. الميكروفون الصوتي (Speech Recognition API)
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                const speechText = event.results[0][0].transcript;
+                userInput.value = speechText;
+                micBtn.classList.remove('recording');
+            };
+
+            recognition.onerror = function() {
+                micBtn.classList.remove('recording');
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('recording');
+            };
+        }
+
+        micBtn.addEventListener('click', () => {
+            if (recognition) {
+                try {
+                    micBtn.classList.add('recording');
+                    recognition.start();
+                } catch (err) {
+                    micBtn.classList.remove('recording');
+                    alert('عذراً، يتعذر تشغيل الميكروفون حالياً.');
+                }
+            } else {
+                alert('متصفحك لا يدعم التحويل الصوتي المباشر.');
+            }
+        });
+
+        // 4. إدارة السجل والمحادثات
         function renderHistory(listToRender = chatSessions) {
             chatHistoryContainer.innerHTML = '<div class="history-title">سجل المحادثات</div>';
             if (listToRender.length === 0) {
@@ -1266,16 +1390,13 @@
                 };
 
                 let pressTimer;
-                const startLongPress = (e) => {
+                const startLongPress = () => {
                     pressTimer = setTimeout(() => {
                         selectedSessionIndexForCtx = index;
                         contextMenuOverlay.classList.add('active');
                     }, 600);
                 };
-
-                const cancelLongPress = () => {
-                    clearTimeout(pressTimer);
-                };
+                const cancelLongPress = () => { clearTimeout(pressTimer); };
 
                 item.addEventListener('touchstart', startLongPress);
                 item.addEventListener('touchend', cancelLongPress);
@@ -1325,7 +1446,7 @@
             session.messages.forEach(msg => {
                 const bubble = document.createElement('div');
                 bubble.className = 'chat-bubble ' + msg.sender;
-                bubble.innerText = msg.text;
+                bubble.innerHTML = msg.text;
                 chatMessagesBox.appendChild(bubble);
             });
             chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
@@ -1396,11 +1517,6 @@
             }
         });
 
-        function triggerFileInput(id) {
-            popupMenu.classList.remove('active');
-            document.getElementById(id).click();
-        }
-
         document.querySelectorAll('.menu-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const text = btn.getAttribute('data-text');
@@ -1459,7 +1575,6 @@
                 chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
 
                 chatSessions[currentSessionIndex].messages.push({ sender: 'ai', text: aiResponseText });
-
                 localStorage.setItem('nibras_sessions', JSON.stringify(chatSessions));
                 renderHistory();
             }, 600);
