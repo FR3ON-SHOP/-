@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نبراس - Nibras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100dvh;
+            background: radial-gradient(circle at 50% 15%, #101622 0%, #05070c 70%, #020305 100%);
+            position: relative;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 1. الشريط العلوي */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px 4px 20px;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #fce18b 70%, #d49b3b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 6px rgba(212, 155, 59, 0.4));
+            position: relative;
+            left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .menu-icon {
+            font-size: 22px;
+            cursor: pointer;
+            color: #fff;
+            padding: 4px;
+        }
+
+        /* الزر الدائري للبروفايل */
+        .profile-avatar-container {
+            position: relative;
+        }
+
+        .profile-avatar-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(232, 183, 102, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-btn:hover {
+            border-color: rgba(232, 183, 102, 0.8);
+            background: rgba(232, 183, 102, 0.15);
+        }
+
+        .profile-avatar-btn i {
+            font-size: 15px;
+            color: #e8b766;
+        }
+
+        .profile-avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* قائمة خيارات البروفايل (تغيير / حذف) */
+        .profile-popup-menu {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            background: rgba(13, 18, 28, 0.98);
+            border: 1px solid rgba(232, 183, 102, 0.45);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            width: 150px;
+        }
+
+        .profile-popup-menu.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .profile-popup-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            transition: background 0.2s;
+        }
+
+        .profile-popup-item:hover {
+            background: rgba(232, 183, 102, 0.15);
+        }
+
+        .profile-popup-item.delete {
+            color: #ff4757;
+        }
+
+        .profile-popup-item.delete:hover {
+            background: rgba(255, 71, 87, 0.15);
+        }
+
+        /* 2. المحتوى الرئيسي */
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px 20px 170px 20px;
+            scrollbar-width: none;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .welcome-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .welcome-container.hidden {
+            display: none;
+        }
+
+        .hero-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -5px;
+            margin-bottom: 12px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .lantern-wrapper {
+            position: relative;
+            width: 110px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .welcome-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 2px;
+            color: #ffffff;
+        }
+
+        .welcome-subtitle {
+            font-size: 13px;
+            color: #9aa4b8;
+            font-weight: 500;
+        }
+
+        .menu-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-direction: row-reverse;
+            gap: 14px;
+            background: rgba(11, 16, 26, 0.85);
+            border: 1px solid rgba(232, 183, 102, 0.35);
+            border-radius: 50px;
+            padding: 9px 18px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            width: fit-content;
+        }
+
+        .menu-btn:hover {
+            background: rgba(232, 183, 102, 0.15);
+            border-color: rgba(232, 183, 102, 0.6);
+        }
+
+        .menu-btn i {
+            font-size: 17px;
+            color: #ffffff;
+        }
+
+        .chat-messages-box {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.user {
+            background: rgba(232, 183, 102, 0.2);
+            border: 1px solid rgba(232, 183, 102, 0.4);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble.ai {
+            background: rgba(13, 18, 28, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #d1d5db;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .background-waves {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            pointer-events: none;
+            opacity: 0.35;
+            z-index: 5;
+        }
+
+        /* 3. الشريط السفلي */
+        .bottom-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            padding: 0 0 10px 0;
+            background: linear-gradient(to top, #020305 92%, transparent);
+            z-index: 30;
+            pointer-events: none;
+        }
+
+        .input-container {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(13, 18, 28, 0.98);
+            border-top: 1px solid rgba(232, 183, 102, 0.45);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 10px 14px 14px 14px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(14px);
+            direction: rtl;
+            position: relative;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .input-left-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .input-right-group {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .popup-menu {
+            position: absolute;
+            bottom: 75px;
+            right: 16px;
+            background: rgba(13, 18, 28, 0.98);
+            border: 1px solid rgba(232, 183, 102, 0.45);
+            border-radius: 20px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.25s ease;
+            width: 170px;
+        }
+
+        .popup-menu.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .popup-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .popup-item:hover {
+            background: rgba(232, 183, 102, 0.15);
+        }
+
+        .popup-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e8b766;
+            font-size: 14px;
+        }
+
+        .popup-item span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fce18b, #d49b3b);
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #000;
+            font-size: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(212, 155, 59, 0.4);
+        }
+
+        .send-btn i {
+            transform: rotate(180deg);
+        }
+
+        .input-container input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 15px;
+            font-family: 'Tajawal', sans-serif;
+            padding: 0 6px;
+            text-align: right;
+            min-width: 40px;
+        }
+
+        .input-container input::placeholder {
+            color: #8c97ab;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auto-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(232, 183, 102, 0.3);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 4. القائمة الجانبية (Sidebar) */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 85%;
+            max-width: 320px;
+            height: 100%;
+            background: #090e17;
+            border-left: 1px solid rgba(232, 183, 102, 0.3);
+            z-index: 100;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 18px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            direction: rtl;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-search {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 30px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            margin-top: 10px;
+        }
+
+        .sidebar-search i {
+            color: #8c97ab;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .sidebar-search input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 15px;
+            width: 100%;
+            font-family: 'Tajawal', sans-serif;
+            text-align: right;
+        }
+
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .new-chat-btn:hover {
+            background: rgba(232, 183, 102, 0.12);
+        }
+
+        .new-chat-btn-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-icon-square {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #8c97ab;
+            font-size: 14px;
+        }
+
+        .settings-sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .settings-sidebar-btn:hover {
+            background: rgba(232, 183, 102, 0.15);
+        }
+
+        .clear-history-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .clear-history-btn:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        .chat-history-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            flex: 1;
+            scrollbar-width: none;
+        }
+
+        .history-title {
+            font-size: 13px;
+            color: #8c97ab;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: right;
+            padding-right: 6px;
+        }
+
+        .history-item {
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #d1d5db;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+
+        .history-item:hover {
+            background: rgba(232, 183, 102, 0.12);
+            color: #fff;
+        }
+
+        /* نافذة خيارات السجل عند الضغط مطولاً */
+        .context-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .context-menu-overlay.active {
+            display: flex;
+        }
+        .context-menu-box {
+            background: #141a26;
+            border: 1px solid rgba(232, 183, 102, 0.4);
+            border-radius: 18px;
+            width: 220px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        .context-menu-item {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            transition: background 0.2s;
+        }
+        .context-menu-item:hover {
+            background: rgba(232, 183, 102, 0.2);
+        }
+        .context-menu-item.delete {
+            color: #ff4757;
+        }
+        .context-menu-item.delete:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        /* 5. نافذة الإعدادات */
+        .settings-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-modal-box {
+            width: 90%;
+            max-width: 400px;
+            background: #141a26;
+            border: 1px solid rgba(232, 183, 102, 0.3);
+            border-radius: 24px;
+            padding: 24px;
+            color: #fff;
+            direction: rtl;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .settings-modal-overlay.active .settings-modal-box {
+            transform: scale(1);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .settings-close-btn {
+            background: transparent;
+            border: none;
+            color: #8c97ab;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .settings-option-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 15px;
+        }
+
+        .settings-option-item span {
+            color: #d1d5db;
+        }
+
+        /* 6. نافذة مستويات التفكير */
+        .auto-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(5px);
+            z-index: 250;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .auto-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .auto-bottom-sheet {
+            width: 100%;
+            max-width: 440px;
+            background: #141a26;
+            color: #ffffff;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 24px 20px 32px 20px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            direction: rtl;
+            border-top: 1px solid rgba(232, 183, 102, 0.3);
+        }
+
+        .auto-modal-overlay.active .auto-bottom-sheet {
+            transform: translateY(0);
+        }
+
+        .auto-sheet-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        .thinking-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 6px;
+        }
+
+        .thinking-option:hover {
+            background: rgba(232, 183, 102, 0.1);
+        }
+
+        .thinking-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .thinking-info p {
+            font-size: 13px;
+            color: #8c97ab;
+        }
+
+        .thinking-option i {
+            color: #e8b766;
+            font-size: 16px;
+            display: none;
+        }
+
+        .thinking-option.selected i {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- الشريط العلوي -->
+        <header class="header">
+            <i class="fa-solid fa-bars menu-icon" id="openSidebarBtn" aria-label="القائمة"></i>
+            <div class="header-brand">نبـراس</div>
+            
+            <!-- حاوية زر البروفايل والقائمة المنسدلة الخاصة به -->
+            <div class="profile-avatar-container">
+                <div class="profile-avatar-btn" id="profileAvatarBtn" title="خيارات البروفايل">
+                    <img id="userAvatarImg" src="" alt="صورة البروفايل" style="display: none;">
+                    <i class="fa-solid fa-user" id="defaultAvatarIcon"></i>
+                </div>
+                <!-- قائمة خيارات الصورة (تغيير أو حذف) -->
+                <div class="profile-popup-menu" id="profilePopupMenu">
+                    <div class="profile-popup-item" id="changeAvatarOpt">
+                        <i class="fa-solid fa-image"></i>
+                        <span>تغيير الصورة</span>
+                    </div>
+                    <div class="profile-popup-item delete" id="deleteAvatarOpt">
+                        <i class="fa-regular fa-trash-can"></i>
+                        <span>حذف الصورة</span>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+        </header>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="scrollable-content" id="scrollableContent">
+            
+            <!-- حاوية الترحيب والاقتراحات -->
+            <div class="welcome-container" id="welcomeContainer">
+                <section class="hero-section">
+                    <div class="lantern-wrapper">
+                        <svg width="100%" height="100%" viewBox="0 0 160 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="lampBloom" cx="50%" cy="68%" r="45%">
+                                    <stop offset="0%" stop-color="#ffbf53" stop-opacity="0.9" />
+                                    <stop offset="30%" stop-color="#d98926" stop-opacity="0.5" />
+                                    <stop offset="65%" stop-color="#b05b00" stop-opacity="0.18" />
+                                    <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+                                </radialGradient>
+                                <linearGradient id="diamondGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="25%" stop-color="#fff2a8" />
+                                    <stop offset="65%" stop-color="#e8a338" />
+                                    <stop offset="100%" stop-color="#ca6a0b" />
+                                </linearGradient>
+                                <radialGradient id="bulbCore" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="40%" stop-color="#fffbdf" />
+                                    <stop offset="100%" stop-color="#f5ba48" stop-opacity="0" />
+                                </radialGradient>
+                                <linearGradient id="shadeBody" x1="20%" y1="0%" x2="80%" y2="100%">
+                                    <stop offset="0%" stop-color="#2c3039" />
+                                    <stop offset="40%" stop-color="#14171d" />
+                                    <stop offset="85%" stop-color="#0b0c10" />
+                                </linearGradient>
+                                <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#8a6125" />
+                                    <stop offset="30%" stop-color="#fce295" />
+                                    <stop offset="50%" stop-color="#ffffff" />
+                                    <stop offset="70%" stop-color="#fce295" />
+                                    <stop offset="100%" stop-color="#8a6125" />
+                                </linearGradient>
+                                <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="8" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <circle cx="80" cy="148" r="65" fill="url(#lampBloom)" />
+                            <line x1="80" y1="0" x2="80" y2="58" stroke="url(#goldRim)" stroke-width="1.2" />
+                            <line x1="80" y1="10" x2="80" y2="58" stroke="#ffffff" stroke-width="0.6" stroke-opacity="0.8" />
+                            <path d="M76 58 C76 55, 84 55, 84 58 L82 63 L78 63 Z" fill="url(#goldRim)" />
+                            <path d="M71 63 H89 C90 63, 90 67, 89 67 H71 C70 67, 70 63, 71 63 Z" fill="url(#shadeBody)" stroke="url(#goldRim)" stroke-width="0.8" />
+                            <path d="M67 69 H93 L91 75 H69 Z" fill="url(#shadeBody)" stroke="url(#goldRim)" stroke-width="0.8" />
+                            <ellipse cx="80" cy="76" rx="12" ry="2" fill="url(#goldRim)" />
+                            <path d="M69 76 C 65 92, 53 112, 42 122 C 60 125, 100 125, 118 122 C 107 112, 95 92, 91 76 Z" fill="url(#shadeBody)" stroke="#11151c" stroke-width="1" />
+                            <path d="M42 122 C 60 130, 100 130, 118 122" stroke="url(#goldRim)" stroke-width="2" fill="none" stroke-linecap="round" />
+                            <path d="M44 122 C 60 114, 100 114, 116 122 L118 122 C 100 130, 60 130, 42 122 Z" fill="#241a0e" />
+                            <polygon points="80,105 110,138 80,172 50,138" fill="url(#diamondGlow)" filter="url(#glowFilter)" />
+                            <polygon points="80,108 107,138 80,168 53,138" fill="url(#diamondGlow)" />
+                            <ellipse cx="80" cy="138" rx="16" ry="16" fill="url(#bulbCore)" />
+                            <ellipse cx="80" cy="138" rx="6" ry="6" fill="#ffffff" />
+                            <polygon points="80,165 83,185 80,192 77,185" fill="#ffe299" opacity="0.6" />
+                        </svg>
+                    </div>
+
+                    <h1 class="welcome-title">مرحباً بك</h1>
+                    <p class="welcome-subtitle">ما الذي تريد أن تسأل اليوم؟</p>
+                </section>
+
+                <!-- الأزرار الوسطى -->
+                <section class="menu-list">
+                    <button class="menu-btn" data-text="مساعدة في الدراسة">
+                        <span>مساعدة في الدراسة</span>
+                        <i class="fa-solid fa-book-open"></i>
+                    </button>
+                    <button class="menu-btn" data-text="أفكار إبداعية">
+                        <span>أفكار إبداعية</span>
+                        <i class="fa-regular fa-lightbulb"></i>
+                    </button>
+                    <button class="menu-btn" data-text="تحليل وشرح">
+                        <span>تحليل وشرح</span>
+                        <i class="fa-regular fa-file-lines"></i>
+                    </button>
+                    <button class="menu-btn" data-text="معلومات عامة">
+                        <span>معلومات عامة</span>
+                        <i class="fa-solid fa-globe"></i>
+                    </button>
+                </section>
+            </div>
+
+            <!-- صندوق المحادثة والرسائل -->
+            <div class="chat-messages-box" id="chatMessagesBox"></div>
+
+            <svg class="background-waves" viewBox="0 0 400 100" fill="none">
+                <path d="M0 80 Q100 20 200 60 T400 40" stroke="url(#waveGold)" stroke-width="1.2"/>
+                <defs>
+                    <linearGradient id="waveGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#e8b766" stop-opacity="0"/>
+                        <stop offset="50%" stop-color="#e8b766" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#e8b766" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- ملفات مخفية للإرفاق -->
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        <input type="file" id="photosInput" accept="image/*" style="display: none;">
+        <input type="file" id="filesInput" accept=".pdf,.doc,.docx,.txt,.zip,application/*" style="display: none;">
+
+        <!-- الشريط السفلي -->
+        <div class="bottom-section">
+            <div class="input-container">
+                <div class="input-left-group">
+                    <button class="send-btn" id="sendBtn" aria-label="إرسال">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button class="icon-btn mic-btn" id="micBtn" aria-label="التحدث الصوتي">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <button class="auto-btn" id="autoBtn">
+                        <span id="autoTextLabel">تلقائي</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 9px;"></i>
+                    </button>
+                </div>
+
+                <input type="text" id="userInput" placeholder="اكتب سؤالك هنا...">
+
+                <div class="input-right-group">
+                    <button class="icon-btn" id="sparkleBtn" aria-label="خيارات الإرفاق">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+                <div class="popup-menu" id="popupMenu">
+                    <div class="popup-item" onclick="triggerFileInput('cameraInput')">
+                        <div class="popup-icon-circle"><i class="fa-solid fa-camera"></i></div>
+                        <span>الكاميرا</span>
+                    </div>
+                    <div class="popup-item" onclick="triggerFileInput('photosInput')">
+                        <div class="popup-icon-circle"><i class="fa-regular fa-image"></i></div>
+                        <span>الصور</span>
+                    </div>
+                    <div class="popup-item" onclick="triggerFileInput('filesInput')">
+                        <div class="popup-icon-circle"><i class="fa-solid fa-paperclip"></i></div>
+                        <span>الملفات</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- نافذة منبثقة للضغط المطول على السجل -->
+    <div class="context-menu-overlay" id="contextMenuOverlay">
+        <div class="context-menu-box">
+            <div class="context-menu-item" id="ctxOpenBtn">
+                <i class="fa-regular fa-folder-open"></i>
+                <span>فتح المحادثة</span>
+            </div>
+            <div class="context-menu-item delete" id="ctxDeleteBtn">
+                <i class="fa-regular fa-trash-can"></i>
+                <span>حذف هذه المحادثة</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- القائمة الجانبية (Sidebar) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="sidebarSearchInput" placeholder="البحث عن المحادثات" onkeyup="filterHistory()">
+        </div>
+        <div class="new-chat-btn" id="newChatBtn">
+            <div class="new-chat-btn-right">
+                <i class="fa-regular fa-pen-to-square"></i>
+                <span>محادثة جديدة</span>
+            </div>
+            <div class="chat-icon-square"><i class="fa-regular fa-comment"></i></div>
+        </div>
+        
+        <button class="settings-sidebar-btn" id="openSettingsBtn">
+            <i class="fa-solid fa-gear"></i>
+            <span>إعدادات التطبيق</span>
+        </button>
+
+        <button class="clear-history-btn" id="clearHistoryBtn">
+            <i class="fa-regular fa-trash-can"></i>
+            <span>مسح جميع المحادثات</span>
+        </button>
+
+        <div class="chat-history-section" id="chatHistoryContainer">
+            <div class="history-title">سجل المحادثات</div>
+        </div>
+    </aside>
+
+    <!-- نافذة إعدادات التطبيق -->
+    <div class="settings-modal-overlay" id="settingsModalOverlay">
+        <div class="settings-modal-box">
+            <div class="settings-header">
+                <h3 class="settings-title">إعدادات نبراس</h3>
+                <button class="settings-close-btn" id="closeSettingsBtn">✕</button>
+            </div>
+            <div class="settings-option-item">
+                <span>لغة التطبيق</span>
+                <span style="color: #e8b766; font-weight: 700;">العربية (افتراضي)</span>
+            </div>
+            <div class="settings-option-item">
+                <span>حفظ السجل محلياً</span>
+                <span style="color: #2ed573; font-weight: 700;">مفعل</span>
+            </div>
+            <div class="settings-option-item">
+                <span>إصدار التطبيق</span>
+                <span style="color: #8c97ab;">1.0.0 Pro</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة مستويات التفكير -->
+    <div class="auto-modal-overlay" id="autoModalOverlay">
+        <div class="auto-bottom-sheet">
+            <h3 class="auto-sheet-title">مستوى التفكير</h3>
+            
+            <div class="thinking-option selected" onclick="setThinkingLevel(this, 'تلقائي')">
+                <div class="thinking-info">
+                    <h4>تلقائي</h4>
+                    <p>تحديد المستوى بذكاء لكل استجابة</p>
+                </div>
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="thinking-option" onclick="setThinkingLevel(this, 'منخفض')">
+                <div class="thinking-info">
+                    <h4>منخفض</h4>
+                    <p>سرعة وفعالية عالية للردود السريعة</p>
+                </div>
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="thinking-option" onclick="setThinkingLevel(this, 'متوسط')">
+                <div class="thinking-info">
+                    <h4>متوسط</h4>
+                    <p>عمق معتدل للمحتوى والشرح</p>
+                </div>
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="thinking-option" onclick="setThinkingLevel(this, 'مرتفع')">
+                <div class="thinking-info">
+                    <h4>مرتفع</h4>
+                    <p>دقة وتحليل مكثف للمعلومات والأسئلة</p>
+                </div>
+                <i class="fa-solid fa-check"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- جافاسكريبت التطبيق الشامل -->
+    <script>
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const sparkleBtn = document.getElementById('sparkleBtn');
+        const popupMenu = document.getElementById('popupMenu');
+        const micBtn = document.getElementById('micBtn');
+
+        const openSidebarBtn = document.getElementById('openSidebarBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const chatHistoryContainer = document.getElementById('chatHistoryContainer');
+
+        const welcomeContainer = document.getElementById('welcomeContainer');
+        const chatMessagesBox = document.getElementById('chatMessagesBox');
+
+        const openSettingsBtn = document.getElementById('openSettingsBtn');
+        const settingsModalOverlay = document.getElementById('settingsModalOverlay');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+        const autoBtn = document.getElementById('autoBtn');
+        const autoModalOverlay = document.getElementById('autoModalOverlay');
+        const autoTextLabel = document.getElementById('autoTextLabel');
+
+        // عناصر إدارة صورة البروفايل والقائمة المنسدلة
+        const profileAvatarBtn = document.getElementById('profileAvatarBtn');
+        const profilePopupMenu = document.getElementById('profilePopupMenu');
+        const changeAvatarOpt = document.getElementById('changeAvatarOpt');
+        const deleteAvatarOpt = document.getElementById('deleteAvatarOpt');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const userAvatarImg = document.getElementById('userAvatarImg');
+        const defaultAvatarIcon = document.getElementById('defaultAvatarIcon');
+
+        // عناصر القائمة المنبثقة للضغط المطول
+        const contextMenuOverlay = document.getElementById('contextMenuOverlay');
+        const ctxOpenBtn = document.getElementById('ctxOpenBtn');
+        const ctxDeleteBtn = document.getElementById('ctxDeleteBtn');
+        let selectedSessionIndexForCtx = null;
+
+        let chatSessions = JSON.parse(localStorage.getItem('nibras_sessions')) || [];
+        let currentSessionIndex = null;
+        let currentThinkingLevel = 'تلقائي';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHistory();
+            if (micBtn) micBtn.title = "التحدث الصوتي جاهز";
+
+            const savedAvatar = localStorage.getItem('nibras_user_avatar');
+            if (savedAvatar) {
+                userAvatarImg.src = savedAvatar;
+                userAvatarImg.style.display = 'block';
+                defaultAvatarIcon.style.display = 'none';
+            }
+        });
+
+        // إظهار أو إخفاء قائمة خيارات البروفايل عند الضغط على الزر الدائري
+        profileAvatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profilePopupMenu.classList.toggle('active');
+        });
+
+        // إغلاق القائمة عند النقر في أي مكان آخر بالصفحة
+        document.addEventListener('click', (e) => {
+            if (!profilePopupMenu.contains(e.target) && e.target !== profileAvatarBtn) {
+                profilePopupMenu.classList.remove('active');
+            }
+        });
+
+        // اختيار خيار "تغيير الصورة"
+        changeAvatarOpt.addEventListener('click', () => {
+            profilePopupMenu.classList.remove('active');
+            profileImageInput.click();
+        });
+
+        // اختيار خيار "حذف الصورة"
+        deleteAvatarOpt.addEventListener('click', () => {
+            profilePopupMenu.classList.remove('active');
+            userAvatarImg.src = '';
+            userAvatarImg.style.display = 'none';
+            defaultAvatarIcon.style.display = 'block';
+            localStorage.removeItem('nibras_user_avatar');
+        });
+
+        profileImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64Image = event.target.result;
+                    userAvatarImg.src = base64Image;
+                    userAvatarImg.style.display = 'block';
+                    defaultAvatarIcon.style.display = 'none';
+                    localStorage.setItem('nibras_user_avatar', base64Image);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function renderHistory(listToRender = chatSessions) {
+            chatHistoryContainer.innerHTML = '<div class="history-title">سجل المحادثات</div>';
+            if (listToRender.length === 0) {
+                chatHistoryContainer.innerHTML += '<div style="color: #666; font-size: 13px; text-align: center; margin-top: 15px;">لا توجد محادثات سابقة</div>';
+                return;
+            }
+            listToRender.forEach(function(session, index) {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerText = session.title;
+
+                item.onclick = function() {
+                    loadSession(index);
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                };
+
+                let pressTimer;
+                const startLongPress = (e) => {
+                    pressTimer = setTimeout(() => {
+                        selectedSessionIndexForCtx = index;
+                        contextMenuOverlay.classList.add('active');
+                    }, 600);
+                };
+
+                const cancelLongPress = () => {
+                    clearTimeout(pressTimer);
+                };
+
+                item.addEventListener('touchstart', startLongPress);
+                item.addEventListener('touchend', cancelLongPress);
+                item.addEventListener('touchmove', cancelLongPress);
+                item.addEventListener('mousedown', startLongPress);
+                item.addEventListener('mouseup', cancelLongPress);
+                item.addEventListener('mouseleave', cancelLongPress);
+
+                chatHistoryContainer.appendChild(item);
+            });
+        }
+
+        ctxOpenBtn.addEventListener('click', () => {
+            if (selectedSessionIndexForCtx !== null) {
+                loadSession(selectedSessionIndexForCtx);
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+            contextMenuOverlay.classList.remove('active');
+        });
+
+        ctxDeleteBtn.addEventListener('click', () => {
+            if (selectedSessionIndexForCtx !== null) {
+                chatSessions.splice(selectedSessionIndexForCtx, 1);
+                localStorage.setItem('nibras_sessions', JSON.stringify(chatSessions));
+                renderHistory();
+                if (currentSessionIndex === selectedSessionIndexForCtx) {
+                    newChatBtn.click();
+                }
+            }
+            contextMenuOverlay.classList.remove('active');
+        });
+
+        contextMenuOverlay.addEventListener('click', (e) => {
+            if (e.target === contextMenuOverlay) {
+                contextMenuOverlay.classList.remove('active');
+            }
+        });
+
+        function loadSession(index) {
+            currentSessionIndex = index;
+            const session = chatSessions[index];
+            
+            welcomeContainer.classList.add('hidden');
+            chatMessagesBox.innerHTML = '';
+
+            session.messages.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-bubble ' + msg.sender;
+                bubble.innerText = msg.text;
+                chatMessagesBox.appendChild(bubble);
+            });
+            chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+        }
+
+        function filterHistory() {
+            const query = document.getElementById('sidebarSearchInput').value.toLowerCase();
+            const filtered = chatSessions.filter(function(session) {
+                return session.title.toLowerCase().includes(query);
+            });
+            renderHistory(filtered);
+        }
+
+        openSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        newChatBtn.addEventListener('click', () => {
+            userInput.value = '';
+            chatMessagesBox.innerHTML = '';
+            welcomeContainer.classList.remove('hidden');
+            currentSessionIndex = null;
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        openSettingsBtn.addEventListener('click', () => {
+            settingsModalOverlay.classList.add('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModalOverlay.classList.remove('active');
+        });
+
+        settingsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === settingsModalOverlay) {
+                settingsModalOverlay.classList.remove('active');
+            }
+        });
+
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('هل أنت متأكد من مسح جميع المحادثات والسجل بالكامل؟')) {
+                chatSessions = [];
+                localStorage.removeItem('nibras_sessions');
+                renderHistory();
+                newChatBtn.click();
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
+        sparkleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            popupMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!popupMenu.contains(e.target) && e.target !== sparkleBtn) {
+                popupMenu.classList.remove('active');
+            }
+        });
+
+        function triggerFileInput(id) {
+            popupMenu.classList.remove('active');
+            document.getElementById(id).click();
+        }
+
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.getAttribute('data-text');
+                userInput.value = text;
+                sendBtn.click();
+            });
+        });
+
+        autoBtn.addEventListener('click', () => {
+            autoModalOverlay.classList.add('active');
+        });
+
+        autoModalOverlay.addEventListener('click', (e) => {
+            if (e.target === autoModalOverlay) {
+                autoModalOverlay.classList.remove('active');
+            }
+        });
+
+        function setThinkingLevel(element, level) {
+            document.querySelectorAll('.thinking-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            currentThinkingLevel = level;
+            autoTextLabel.innerText = level;
+            
+            setTimeout(() => {
+                autoModalOverlay.classList.remove('active');
+            }, 200);
+        }
+
+        function handleUserMessage(text) {
+            welcomeContainer.classList.add('hidden');
+
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.innerText = text;
+            chatMessagesBox.appendChild(userBubble);
+
+            if (currentSessionIndex === null) {
+                const newSession = {
+                    title: text,
+                    messages: [{ sender: 'user', text: text }]
+                };
+                chatSessions.unshift(newSession);
+                currentSessionIndex = 0;
+            } else {
+                chatSessions[currentSessionIndex].messages.push({ sender: 'user', text: text });
+            }
+
+            setTimeout(() => {
+                const aiResponseText = `أهلاً بك! لقد استلمت سؤالك بمستوى تفكير [ ${currentThinkingLevel} ]: "${text}". كيف يمكنني مساعدتك أكثر؟`;
+                
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'chat-bubble ai';
+                aiBubble.innerText = aiResponseText;
+                chatMessagesBox.appendChild(aiBubble);
+                chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+
+                chatSessions[currentSessionIndex].messages.push({ sender: 'ai', text: aiResponseText });
+
+                localStorage.setItem('nibras_sessions', JSON.stringify(chatSessions));
+                renderHistory();
+            }, 600);
+
+            userInput.value = '';
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const text = userInput.value.trim();
+            if (text !== '') {
+                handleUserMessage(text);
+            }
+        });
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
